@@ -1,0 +1,29 @@
+{extend name="common/header"/}
+{block name="main"}
+	<div class="fluid full-screen">
+	    <div class="row-item col-space10">
+	        <div class="col-lg-12">
+	            <div class="col-card card-full">
+	                <div class="card-header">
+	                    <i class="dot"></i>刷新缓存目录
+	                </div>
+	                <div class="card-body col-space20">
+	                    <form action="{:url($MODULE.'/flush_file_cache')}" method="post" onsubmit="return false;">
+							<table width="60%">
+								<tr style="padding-bottom: 23px;display: inline-block;">
+									<td>1）/SiteData/Runtime/</td>
+								</tr>
+								<tr>
+									<td align="left" colspan="6">
+	                                    <a class="btn btn-white form-cancel" style="display: none;" href="{:url('memcache')}">取消</a>
+										<input type="button" class="btn btn-primary" onclick="formSubmit($(this).parents('form'));" value="清空以上目录缓存">
+									</td>
+								</tr>
+							</table>
+						</form>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+{/block}

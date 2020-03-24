@@ -1,0 +1,93 @@
+<style>
+	.btn-white{margin-right: 10px;}
+</style>
+<div class="card-header">
+     <i class="dot"></i>ID：{$data['id']}&nbsp;&nbsp;&nbsp;
+     {if $data['client_is_company'] == 1}
+     	{$data['client_name']|default=''}
+     {else}
+     	{$data['company_name']|default=''}
+     {/if}
+ </div>
+<div class="card-body">
+	所属系统：{if $data['client_system'] == 1}快快系统{else}华为云系统{/if}
+	&nbsp;&nbsp;&nbsp;
+	所属销售：
+	{if $data['admin_id'] > 0}
+		{$data['admin_surename']|default='-'}
+	{else}
+		-
+	{/if}
+	&nbsp;&nbsp;&nbsp;
+	<strong>保护到期时间：</strong><font color="red">{:date('Y-m-d', $data['client_sell_endtime'])}</font>
+	&nbsp;&nbsp;&nbsp;
+	<strong>本月消费（元）：</strong>￥ {:number_format($data['client_month_consume'], 2)}
+</div>
+{if $ACTION != 'history'}
+	<div class="card-body">
+		{if $data['client_is_company'] == 1}
+			{:controller('Acl')->a('<i class="fa fa-pencil-square-o"></i> 写新跟进', 'visiting_record_edit', $MODULE, 'client_name='.$data['client_name'], 'class="btn btn-sm btn-white"')}
+		{else}
+			{:controller('Acl')->a('<i class="fa fa-pencil-square-o"></i> 写新跟进', 'visiting_record_edit', $MODULE, 'client_name='.$data['company_name'], 'class="btn btn-sm btn-white"')}
+		{/if}
+		{if $data['client_is_company'] == 2 && $data['client_is_intention'] == 3}
+			{:controller('Acl')->a('<i class="fa fa-exchange"></i> 转意向', 'general_to_intention', $MODULE, 'id='.$data['id'], 'class="btn btn-sm btn-white ajax-post" data-referer='.url("Client/add_record_list"))}
+		{/if}
+		{if $data['client_is_intention'] < 3}
+			{if $data['client_is_intention'] == 1}
+				{:controller('Acl')->a('<i class="fa fa-exchange"></i> 转成交', 'intention_to_deal', $MODULE, 'id='.$data['id'], 'class="btn btn-sm btn-white"')}
+			{else}
+				{:controller('Acl')->a('<i class="fa fa-exchange"></i> 转成交', 'deal_to_deal', $MODULE, 'id='.$data['id'], 'class="btn btn-sm btn-white"')}
+			{/if}
+		{/if}
+		{if $data['client_is_company'] == 1}
+			{if $data['record_count'] > 0}
+				{if controller('Acl')->hasAcl('Client','client_record')}
+					<a href="#" class="btn btn-sm btn-white btn-grey" title="延时" disabled><i class="fa fa-clock-o"></i> 延时</a>
+				{/if}
+			{else}
+				{if $data['client_is_intention'] == 1}
+					{:controller('Acl')->a('<i class="fa fa-clock-o"></i> 延时', 'client_record', $MODULE, 'id='.$data['id'], 'class="btn btn-sm btn-white"')}
+				{else}
+					{:controller('Acl')->a('<i class="fa fa-clock-o"></i> 延时', 'deal_client_record', $MODULE, 'id='.$data['id'], 'class="btn btn-sm btn-white"')}
+				{/if}
+			{/if}
+		{else}
+			{if $data['client_is_intention'] != 3}
+				{if $data['record_count'] > 0}
+					{if controller('Acl')->hasAcl('Client','company_client_record')}
+						<a href="#" class="btn btn-sm btn-white btn-grey" title="延时" disabled><i class="fa fa-clock-o"></i> 延时</a>
+					{/if}
+				{else}
+					{if $data['client_is_intention'] == 1}
+						{:controller('Acl')->a('<i class="fa fa-clock-o"></i> 延时', 'company_client_record', $MODULE, 'id='.$data['id'], 'class="btn btn-sm btn-white"')}
+					{elseif $data['client_is_intention'] == 2}
+						{:controller('Acl')->a('<i class="fa fa-clock-o"></i> 延时', 'company_deal_client_record', $MODULE, 'id='.$data['id'], 'class="btn btn-sm btn-white"')}
+					{/if}
+				{/if}
+			{/if}
+		{/if}
+			{if $data['client_is_protect'] == 1}
+				{:controller('Acl')->a('<i class="fa fa-child"></i> 解除保护', 'release_client', $MODULE, 'id='.$data['id'], 'class="btn btn-sm btn-white btn-del"')}
+			{else}
+				{:controller('Acl')->a('<i class="fa fa-umbrella"></i> 保护', 'protect_client', $MODULE, 'id='.$data['id'], 'class="btn btn-sm btn-white btn-del"')}
+			{/if}
+			
+			{if $data['client_is_company'] == 1}
+				{if $data['client_is_intention'] == 1}
+					{:controller('Acl')->a('<i class="fa fa-pencil-square-o"></i> 编辑', 'edit', $MODULE, 'id='.$data['id'], 'class="btn btn-sm btn-white"')}
+				{else}
+					{:controller('Acl')->a('<i class="fa fa-pencil-square-o"></i> 编辑', 'deal_edit', $MODULE, 'id='.$data['id'], 'class="btn btn-sm btn-white"')}
+				{/if}
+			{else}
+				{if $data['client_is_intention'] == 1}
+					{:controller('Acl')->a('<i class="fa fa-pencil-square-o"></i> 编辑', 'company_intention_edit', $MODULE, 'id='.$data['id'], 'class="btn btn-sm btn-white"')}
+				{elseif $data['client_is_intention'] == 2}
+					{:controller('Acl')->a('<i class="fa fa-pencil-square-o"></i> 编辑', 'company_deal_edit', $MODULE, 'id='.$data['id'], 'class="btn btn-sm btn-white"')}
+				{else}
+					{:controller('Acl')->a('<i class="fa fa-pencil-square-o"></i> 编辑', 'company_edit', $MODULE, 'id='.$data['id'], 'class="btn btn-sm btn-white"')}
+				{/if}
+			{/if}
+		{:controller('Acl')->a('<i class="fa fa-trash-o"></i> 删除', 'delete', $MODULE, 'id='.$data['id'], 'class="btn btn-sm btn-white btn-del" data-url='.url('Client/index'))}
+	</div>
+{/if}

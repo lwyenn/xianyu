@@ -1,0 +1,237 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+        <meta name="renderer" content="webkit">
+		<title>CRM后台管理系统</title>
+		<link rel="stylesheet" type="text/css" href="{$Think.config.template.static_css}/style.css?v={$Think.config.template.version}" />
+
+
+		<script type="text/javascript" src="{$Think.config.template.static_js}/jquery.min.js?v={$Think.config.template.version}"></script>
+
+        <script src="{$Think.config.template.static_plugin}/layer/layer.js?v={$Think.config.template.version}"></script>
+
+        <script type="text/javascript" src="{$Think.config.template}/static/fonts/iconfont.js?v={$Think.config.template.version}"></script>
+
+        <script src="{$Think.config.template.static_plugin}/laydate/laydate.js"></script>
+        <link rel="stylesheet" type="text/css" href="{$Think.config.template.static_plugin}/laydate/theme/default/laydate.css" />
+
+		<script type="text/javascript" src="{$Think.config.template.static_js}/component.js?v={$Think.config.template.version}"></script>
+		<script type="text/javascript" src="{$Think.config.template.static_js}/common.js?v={$Think.config.template.version}"></script>
+        <script type="text/javascript" src="{$Think.config.template.static_plugin}/echarts.min.js?v={$Think.config.template.version}"></script>
+	</head>
+<body>
+	<div id="adminUI">
+        <div class="container clear">
+            <div class="header clear">
+                <div class="header-l fl">
+                    <a href="javascript:;" id="flexible">
+                        <i class="iconfont">&#xe66c;</i>
+                        }
+                    </a>
+                    <div class="nav-horizontal">
+                        <ul>
+                            {foreach $navlist as $key=>$vo}
+                            <li {if !empty($vo['current'])}class='on'{/if}>
+                                <a href="{$vo.url}">{$vo.title}</a>
+                            </li>
+                            {/foreach}
+                        </ul>
+                    </div>
+                </div>
+                <div class="header-r fr">
+                    <ul>
+                        <li>
+                            <a href="javascript:;" id="fullScreen" title="全屏">
+                                <i class="iconfont">&#xe683;</i>
+                            </a>
+                            <a href="javascript:;" id="smallScreen" title="全屏" style="display: none">
+                                <i class="iconfont">&#xe603;</i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{:url('System/flush_file_cache')}" class='ajax-post' title="清理缓存">
+                                <i class="iconfont">&#xe624;</i>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="user">
+                        <a href="javascript:;">
+                            <img src="{$Think.config.template.static_img}/header.jpg"/>
+                            <span>{$USER_SURENAME}</span>
+                            <i class="iconfont">&#xe759;</i>
+                        </a>
+                        <dl class="nav-child">
+                            <dd class="separation">
+                                <a href="{:url('Passport/logout')}" class='ajax-post'>退出</a>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div class="main fl">
+            	{block name="main"}
+                	
+            	{/block}
+            </div>
+            {if !empty($childMenu)}
+            <div class="left nav-vertical fl">
+                <a class="logo" href="#" target="_blank"></a>
+                <ul>
+                	{foreach $childMenu as $mod=>$vo}
+	                    <li {if !empty($vo['current'])} class="expand" {/if}>
+	                        <a href="javascript:;">
+                                <i class="iconfont">&#xe672;</i>
+	                            <cite>{$vo['title']}</cite>
+	                            <i class="iconfont icon-right">&#xe609;</i>
+	                        </a>
+	                        {if !empty($vo['list'])}
+                                {php}
+                                    $mod = isset($st['m']) ? $st['m'] : $mod;
+                                {/php}
+                                {if left_menu_hidden($mod)}
+			                        <dl>
+			                        	{foreach $vo['list'] as $st}
+                                            {if strpos($st['url'], 'affairs') !== false}
+                                                {if !in_array($group_id, [35,47,22]) || $team_id == 4}
+        				                            <dd {if !empty($st['current'])}class="on"{/if}>
+        				                                <a href="{$st.url}">
+                                                            <i class="circle"></i>
+        				                                    <cite>{$st['title']}</cite>
+        				                                </a>
+        				                            </dd>
+                                                {/if}
+                                            {else}
+                                                <dd {if !empty($st['current'])}class="on"{/if}>
+                                                    <a href="{$st.url}">
+                                                        <i class="circle"></i>
+                                                        <cite>{$st['title']}</cite>
+                                                    </a>
+                                                </dd>
+                                            {/if}
+			                            {/foreach}
+			                        </dl>
+                                {/if}
+	                        {/if}
+	                    </li>
+                    {/foreach}
+                </ul>
+                <a href="#" target="_blank" style="display: block;text-align: center;">厦门贤鱼</a>
+            </div>
+            {/if}
+        </div>
+    </div>
+    
+</body>
+<script>
+    //时间的快捷搜索
+    $(".set_time").on('click',function(e){
+        var day     = $(this).attr('data-time');
+        var time    = Date.parse(new Date());
+        var date_type = $(this).attr('data-type');
+        if(day == 0){
+            time = time-(86400*day*1000);
+            var newDate = new Date(time);
+            var time1 = formatDate(newDate,1);
+            var time2 = formatDate(newDate,1);
+        }else if(day == 1){
+            time = time-(86400*day*1000);
+            var newDate = new Date(time);
+            var time1 = formatDate(newDate,1);
+            var time2 = formatDate(newDate,1);
+        }else if(day == 30){
+            var newDate = new Date(time);
+            var time1 = formatDate(newDate,2);
+            var time2 = formatDate(newDate,1);
+        }else if(day == -7){
+            var time1 = getLastWeekStartDate();
+            var time2 = getLastWeekEndDate();
+        }else if(day == -30){
+            var time1 = getLastMonthStartDate();
+            var time2 = getLastMonthEndDate();
+        }else if(day == 7){
+            var Nowdate = new Date();
+            var WeekFirstDay=new Date(Nowdate-(Nowdate.getDay()-1)*86400000);
+            var WeekLastDay=new Date((WeekFirstDay/1000+6*86400)*1000);
+            var time1  		= formatDate(WeekFirstDay,1);
+            var time2 		= formatDate(WeekLastDay,1);
+        }else if(day == 28){
+            var Nowdate = new Date();
+            var WeekFirstDay_1=new Date(Nowdate-(Nowdate.getDay()+20)*86400000);
+            var WeekFirstDay=new Date(Nowdate-(Nowdate.getDay()-1)*86400000);
+            var WeekLastDay=new Date((WeekFirstDay/1000+6*86400)*1000);
+            var time1  		= formatDate(WeekFirstDay_1,1);
+            var time2 		= formatDate(WeekLastDay,1);
+        }else if(day == 120){
+            var time1 = getRangeMonthStartDate(4);
+            var time2 = getRangeMonthEndDate(4);
+        }
+        if (date_type=='dateRange'){
+            $(this).parents(".search").find(".dateRange").val(time1+' - '+time2);
+        }else {
+            $("#start_time").val(time1);
+            $("#end_time").val(time2);
+        }
+        if ($(this).attr('data-submit')=="true"){
+            $(this).parents("form").submit();
+        }
+        if ($(this).attr('data-way')){
+            eval($(this).attr('data-way'));
+        }
+    })
+
+    //获得上周的开始日期
+    function getLastWeekStartDate() {
+        var date = new Date();
+        var weekStartDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() - 6);
+        return formatDate(weekStartDate,1);
+    }
+    //获得上周的结束日期
+    function getLastWeekEndDate() {
+        var date = new Date();
+        var weekEndDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());
+        return formatDate(weekEndDate,1);
+    }
+    //获得上月开始时间
+    function getLastMonthStartDate() {
+        var date = new Date();
+        date.setMonth(date.getMonth()-1);
+        var lastMonthStartDate = new Date(date.getFullYear(), date.getMonth(), 1);
+        return formatDate(lastMonthStartDate,1);
+    }
+    //获得上月结束时间
+    function getLastMonthEndDate() {
+        var date = new Date();
+        var lastMonthEndDate = Date.parse(new Date(date.getFullYear(), date.getMonth(), 1))-86400*1000;
+        return formatDate(new Date(lastMonthEndDate),1);
+    }
+    //获得前几个月的开始时间
+    function getRangeMonthStartDate(n) {
+        var date = new Date();
+        date.setMonth(date.getMonth()-n+1);
+        var lastMonthStartDate = new Date(date.getFullYear(), date.getMonth(), 1);
+        return formatDate(lastMonthStartDate,1);
+    }
+    //获得前几个月的结束时间
+    function getRangeMonthEndDate(n) {
+        var date = new Date();
+        var lastMonthEndDate = Date.parse(new Date(date.getFullYear(), date.getMonth()+1, 0));
+        return formatDate(new Date(lastMonthEndDate),1);
+    }
+    // 显示时间
+    function formatDate(now,type){
+        Y = now.getFullYear() + '-';
+        M = (now.getMonth()+1 < 10 ? '0'+(now.getMonth()+1) : now.getMonth()+1) + '-';
+        D = (now.getDate() <10 ? ('0'+ now.getDate()) : now.getDate()) + '';
+        h = now.getHours() + ':';
+        m = now.getMinutes();
+        s = now.getSeconds();
+        if(type == 1){
+            return  Y+M+D;
+        }else if(type == 2){
+            return  Y+M+'01';
+        }
+    }
+</script>
+</html>

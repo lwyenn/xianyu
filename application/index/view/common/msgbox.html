@@ -1,0 +1,47 @@
+{extend name="common/pop" /}
+{block name="main"}
+
+
+<script>
+	var icon_num = "{if $code==1}1{else}2{/if}";
+	var waitSecond = {$wait|default='3'};
+
+	jumpUrl = "{$url|htmlspecialchars_decode}";
+    topUrl  = false;
+	//解析URL。分享出JS和URL
+	if (jumpUrl.indexOf("<js>") != -1) {
+		jsStr = jumpUrl.substring(jumpUrl.indexOf("<js>") + 4, jumpUrl.indexOf("</js>"));
+		jumpUrl = jumpUrl.replace("<js>" + jsStr + "</js>", '');
+		eval(jsStr);
+	}
+	if (jumpUrl.indexOf("<jsend>") != -1) {
+		jsEndStr = jumpUrl.substring(jumpUrl.indexOf("<jsend>") + 7, jumpUrl.indexOf("</jsend>"));
+		jumpUrl = jumpUrl.replace("<jsend>" + jsEndStr + "</jsend>", '');
+	}
+	if (jumpUrl.indexOf("<topurl>") != -1) {
+		topUrl = true;
+		jumpUrl = jumpUrl.replace("<topurl>", '');
+	}
+    if ("{$data}" == "winbox"){
+        topUrl = true;
+    }
+	layer.alert("{$msg}",{
+        icon:icon_num,
+        skin: 'pop-custom',
+        title:false,
+        btn:0,
+        time:waitSecond*1000,
+		shadeClose:true,
+		shade:[0.8, '#162647'],
+		end:function(){
+			if (topUrl) {
+				window.top.location.href = jumpUrl;
+			} else {
+				window.location.href = jumpUrl;
+			}
+		}
+    })
+</script>
+
+
+{/block}

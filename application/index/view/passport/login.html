@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<title>CRM后台管理系统</title>
+	<link rel="stylesheet" href="{$Think.config.template.static_css}/style.css"/>
+	<link rel="stylesheet" href="{$Think.config.template.static_css}/login.css" />
+	<script type="text/javascript" src="{$Think.config.template.static_js}/jquery.min.js?v={$Think.config.template.version}"></script>
+	<script type="text/javascript" src="{$Think.config.template.static_js}/fn.extend.js?v={$Think.config.template.version}"></script>
+	<script src="{$Think.config.template.static_plugin}/layer/layer.js?v={$Think.config.template.version}"></script>
+</head>
+<body>
+<div class="login">
+	<div class="login-item clear">
+		<div class="login-l fl">
+			<h3>CRM管理系统</h3>
+			<div class="tb">
+				<div class="tbc">
+					<img src="{$Think.config.template.static_img}/login.svg"/>
+				</div>
+			</div>
+		</div>
+		<div class="login-r fr">
+			<div class="login-r-header">
+				<img src="{$Think.config.template.static_img}/login-icon.svg"/>
+			</div>
+			<form class="card-body" action="{:url('Passport/login')}" method="post">
+				<ul>
+					<li>
+						<i class="fa fa-user"></i>
+						<input type="text" placeholder="请输入用户名或手机" id="username" />
+					</li>
+					<li>
+						<i class="fa fa-unlock-alt"></i>
+						<input type="password" placeholder="请输入登录密码" id="password" />
+					</li>
+					<li class="yzm" {if session('login_error') == 1}style="display:block"{else}style="display:none"{/if}>
+						<i class="fa fa-question-circle"></i>
+						<input id="verify" type="text" placeholder="请输入验证码"/>
+						<img src="{:url('Passport/verify')}" onclick="javascript:void(this.src='{:url('Passport/verify')}?num='+Math.random());" />
+					</li>
+					<li class="clear">
+						<div class="fr">
+							<label for="remember" class="checkbox-skin">
+								<input id="remember" type="checkbox" name="checkbox" />
+								<i class="checkbox-icon iconfont"></i>
+								<span>记住密码</span>
+							</label>
+						</div>
+					</li>
+					<li>
+						<a href="javascript:;" class="btn" onclick="$('form').submit()">登录</a>
+					</li>
+				</ul>
+			</form>
+		</div>
+	</div>
+	<input type="hidden" value="{$login_error}" id="login_error">
+</div>
+<script type="text/javascript">
+
+	$(function(){
+		var _rmu = $.getcookie('remember_user');//记住用户名
+		var _rmp = $.getcookie('remember_password');//记住用户密码
+		$("#username").val(_rmu ? _rmu : '');
+		$("#password").val(_rmp ? _rmp.substring(0,_rmp.length-4) : '');
+
+		if (_rmu) {
+			$("#remember").prop('checked','checked');
+		}
+
+		$("form").submit(function(){
+			$.setcookie('remember_user', false, 0);
+			var username 	= $.trim($("#username").val());
+			var password 	= $.trim($("#password").val());
+			var verify 		= $.trim($("#verify").val());
+			var login_error = $.trim($("#login_error").val());
+			var ajax_url;
+			if(username == ''){
+				layer.alert('用户名不能为空！',{
+					icon:2,
+					skin: 'pop-custom',
+					title:false,
+					btn:0,
+					shadeClose:true,
+					time:2000
+				})
+				return false;
+			}
+			if(password == ''){
+				layer.alert('密码不能为空',{
+					icon:2,
+					skin: 'pop-custom',
+					title:false,
+					btn:0,
+					shadeClose:true,
+					time:2000
+				})
+				return false;
+			}
+			if ($(".yzm").css('display') != 'none') {
+				if(verify == ''){
+					layer.alert('验证码不能为空',{
+						icon:2,
+						skin: 'pop-custom',
+						title:false,
+						btn:0,
+						shadeClose:true,
+						time:2000
+					})
+					return false;
+				}else{
+					ajax_url = "username="+username+"&password="+ password+"&verify="+verify;
+				}
+			} else {
+				ajax_url = "username="+username+"&password="+ password;
+			}
+			//记住用户
+			if($("#remember").prop("checked")){
+				$.setcookie('remember_user', username, 30);
+			}
+
+			layer.load();
+			$.ajax({
+				url : $(this).attr("action"),
+				data : ajax_url,
+				type : "POST",
+				dataType : 'json',
+				success : function(json){
+					layer.closeAll();
+					if(json.code == 1){
+						//记住密码
+						if ($("#remember").prop("checked")) {
+							$.setcookie('remember_password', password+"kkwl", 30);
+						} else {
+							$.delcookie('remember_user');
+							$.delcookie('remember_password');
+						}
+						window.location.href = json.url;
+					}else{
+						layer.alert(json.msg,{
+							icon:2,
+							skin: 'pop-custom',
+							title:false,
+							btn:0,
+							shadeClose:true,
+							time:2000,
+							end:function(){
+						      	$(".yzm").show();
+							}
+						})
+					}
+				},
+				error : function(){
+					layer.alert('系统出错，登录验证失败',{
+						icon:2,
+						skin: 'pop-custom',
+						title:false,
+						btn:0,
+						shadeClose:true,
+						time:2000
+					})
+				}
+			});
+			return false;
+		});
+
+		$(document).keydown(function(e){
+			e = e || window.event;
+			if(e.keyCode == 13) {
+				$('form').submit();
+			}
+		});
+	})
+
+</script>
+</body>
+</html>

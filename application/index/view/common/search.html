@@ -1,0 +1,68 @@
+{if !empty($form_items)}
+<form method="get" class="search" action="{if isset($post_url)}{$post_url}{else}{:url($MODULE.'/'.$ACTION)}{/if}">
+    <ul>
+    	{foreach $form_items as $k => $vo}
+			{switch $vo.type}
+				{case select}
+					{if isset($vo['power'])}
+						{if $vo['power']}
+							<li>
+								<select name="{$vo['name']}" class="select-item">
+									<option value="">{$vo['title']}</option>
+									{foreach $vo['options'] as $k=>$v}
+										<option value="{$k}"{if isset($getdata[$vo['name']]) && $getdata[$vo['name']]==$k} selected{/if}>{$v}</option>
+								    {/foreach}
+							    </select>
+		        			</li>
+						{/if}
+					{else}
+						<li>
+							<select name="{$vo['name']}" class="select-item">
+								<option value="">{$vo['title']}</option>
+								{foreach $vo['options'] as $k=>$v}
+									<option value="{$k}"{if isset($getdata[$vo['name']]) && $getdata[$vo['name']]==$k} selected{/if}>{$v}</option>
+							    {/foreach}
+						    </select>
+	        			</li>
+        			{/if}
+				{/case}
+				{case date_range}
+                    <li>
+						<input type="text" class="dateRange input-skin" name="{$vo['name']}" placeholder="{$vo['title']}" value="{if isset($getdata[$vo['name']])}{$getdata[$vo['name']]}{/if}">
+			        </li>
+				{/case}
+				{case text}
+					<li>
+						<input type="text" class="input-skin" name="{$vo['name']}" placeholder="{$vo['title']}" value="{if isset($getdata[$vo['name']])}{$getdata[$vo['name']]}{/if}">
+			        </li>
+				{/case}
+				{case hidden}
+					<input type="hidden" name="{$vo['name']}" value="{$getdata[$vo['name']]|default=''}">
+				{/case}
+			{/switch}
+        {/foreach}
+        <li>
+        	<button class="btn btn-primary">
+                <i class="iconfont">&#xe600;</i>
+                搜索
+            </button>
+        </li>
+        {if !empty($form_button)}
+        	{foreach $form_button as $fb}
+        		<li>
+        			{if isset($fb['power']) && $fb['power']}
+        				{if isset($fb['class'])}
+							{:controller("Acl")->a($fb['title'], $fb['action'], $fb['controller'], $fb['param'], 'class="btn '.$fb['class'].'" data-height="80%"')}
+        				{else}
+							{:controller("Acl")->a($fb['title'], $fb['action'], $fb['controller'], $fb['param'], 'class="btn btn-primary"')}
+        				{/if}
+					{else}
+						<a title="{$fb['title']}" href="{$fb['url']|default='javascript:;'}" class="btn {$fb['class']|default=''}" {$fb['extra']|default=''}>{$fb['title']}</a>
+					{/if}
+
+        		</li>
+        	{/foreach}
+        {/if}
+    </ul>
+</form>
+{/if}

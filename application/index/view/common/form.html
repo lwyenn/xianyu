@@ -1,0 +1,373 @@
+{if !empty($form_items)}
+<div class="fluid full-screen">
+    <div class="row-item col-space10">
+        <div class="col-lg-12">
+            <div class="col-card card-full">
+            	{if !empty($ftitle)}
+	                <div class="card-header">
+	                    <i class="dot"></i>{$ftitle}
+	                </div>
+                {/if}
+                <form class="card-body col-space20" method="post" action="{$post_url}" {if isset($ajax_submit) && $ajax_submit}onsubmit="return false;"{/if} data-continue="{if $is_continue}1{else}0{/if}" enctype="multipart/form-data">
+                    <div class="col-space10">
+						{foreach $form_items as $k => $vo}
+							{switch $vo.type}
+								{case text}
+									<div class="row-item">
+			                            <div class="col-lg-12">
+			                                <label class="form-label">{if isset($vo['require']) && $vo['require']}<span class="red">*</span>{/if}{$vo['title']}：</label>
+			                                <div class="form-input">
+			                                	<div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+			                                		<input type="text" class="input-skin {$vo['class']|default=''} {if isset($vo['require']) && $vo['require']} require{/if}" name="{$vo['name']}" value="{$vo['value']|default=''}" {if isset($vo['max-length'])}maxlength="{$vo['max-length']}"{/if} {$vo['extra']|default=''} />
+			                                	</div>
+			                                	{if !empty($vo['tips'])}
+				                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 form-tips">
+				                                    	{$vo['tips']}
+				                                    </div>
+												{/if}
+			                                </div>
+			                            </div>
+			                        </div>
+								{/case}
+								{case winbox}
+									<div class="row-item">
+										<div class="col-lg-12">
+											<label class="form-label">{if !empty($vo['require']) && $vo['require']}<span class="red">*</span>{/if}{$vo['title']}：</label>
+											<div class="form-input">
+												<div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+													<input type="text" data-url="{$vo['url']}" class="input-skin {if isset($vo['require']) && $vo['require']} require{/if}" name="{$vo['name']}" value="{$vo['value']|default=''}" {if isset($vo['max-length'])}maxlength="{$vo['max-length']}"{/if} />
+												</div>
+												{if !empty($vo['tips'])}
+												<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 form-tips">
+													{$vo['tips']}
+												</div>
+												{/if}
+											</div>
+										</div>
+									</div>
+								{/case}
+								{case select}
+									<div class="row-item">
+			                            <div class="col-lg-12">
+			                                <label class="form-label">{if !empty($vo['require']) && $vo['require']}<span class="red">*</span>{/if}{$vo['title']}：</label>
+			                                <div class="form-input">
+			                                    <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+			                                        <select name="{$vo['name']}" class="select-item">
+			                                            {foreach $vo['options'] as $key => $op}
+			                                            	<option value="{$key}" {if !empty($vo['value']) && $vo['value'] == $key}selected{/if}>{$op}</option>
+			                                            {/foreach}
+			                                        </select>
+			                                    </div>
+			                                    {if !empty($vo['tips'])}
+				                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 form-tips">
+				                                    	{$vo['tips']}
+				                                    </div>
+												{/if}
+			                                </div>
+			                            </div>
+			                        </div>
+								{/case}
+								{case radio}
+									<div class="row-item">
+			                            <div class="col-lg-12">
+			                                <label class="form-label">{if !empty($vo['require']) && $vo['require']}<span class="red">*</span>{/if}{$vo['title']}：</label>
+			                                <div class="form-input"  style="white-space: initial;">
+			                                	{foreach $vo['options'] as $k => $v}
+				                                	{if $v}
+					                                    <label for="{$vo['name']}{$k}" class="radio-skin">
+					                                        <input id="{$vo['name']}{$k}" type="radio" name="{$vo['name']}" {if !empty($vo['value']) && $vo['value'] == $k}checked{elseif isFirstArrayValue($k, $vo['options'])}checked{/if} value="{$k}">
+					                                        <i class="radio-icon fa"></i>
+					                                        <span>{$v}</span>
+					                                    </label>
+				                                    {/if}
+			                                    {/foreach}
+			                                </div>
+			                            </div>
+			                        </div>
+								{/case}
+								{case hidden}
+									<input type="hidden" name="{$vo['name']}" value="{if isset($vo['value'])}{$vo['value']}{/if}">
+								{/case}
+								{case number}
+									<div class="row-item">
+			                            <div class="col-lg-12">
+			                                <label class="form-label">{if !empty($vo['require']) && $vo['require']}<span class="red">*</span>{/if}{$vo['title']}：</label>
+			                                <div class="form-input">
+			                                	<div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+				                                    <input type="number" class="input-skin {if !empty($vo['require']) && $vo['require']} require{/if}" name="{$vo['name']}" value="{$vo['value']|default='0'}" />
+				                                </div>
+			                                    {if !empty($vo['tips'])}
+				                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 form-tips">
+				                                    	{$vo['tips']}
+				                                    </div>
+												{/if}
+			                                </div>
+			                            </div>
+			                        </div>
+								{/case}
+								{case checkbox}
+									<div class="row-item">
+			                            <div class="col-lg-12">
+			                                <label class="form-label">{if !empty($vo['require']) && $vo['require']}<span class="red">*</span>{/if}{$vo['title']}：</label>
+			                                <div class="form-input checkbox-div" style="white-space: initial;">
+			                                	{foreach $vo['options'] as $k => $op}
+				                                    {if !empty($vo['value']) && is_array($vo['value'])}
+			                                			<label for="{$vo['name']}{$k}" class="checkbox-skin check_box_label">
+					                                        <input id="{$vo['name']}{$k}" type="checkbox" name="{$vo['name']}[{$k}]" {if !empty($vo['value']) && in_array($k, $vo['value'])}checked{/if} class="{if isset($vo['class'])}{$vo['class']}{/if}" />
+					                                        <i class="checkbox-icon fa"></i>
+					                                        <span>{$op}</span>
+					                                    </label>
+			                                		{else}
+					                                    <label for="{$vo['name']}{$k}" class="checkbox-skin check_box_label">
+					                                        <input id="{$vo['name']}{$k}" type="checkbox" name="{$vo['name']}[{$k}]" {if !empty($vo['value']) && $vo['value'] == $k}checked{/if} class="{if isset($vo['class'])}{$vo['class']}{/if}" />
+					                                        <i class="checkbox-icon fa"></i>
+					                                        <span>{$op}</span>
+					                                    </label>
+				                                    {/if}
+			                                    {/foreach}
+			                                </div>
+			                            </div>
+			                        </div>
+								{/case}
+								{case tree_check}
+									{foreach $vo['options'] as $op}
+										{foreach $op as $k => $item}
+											<div class="col-card">
+							                    <div class="card-header" style="background-color: #f2f2f2;height: auto;padding: 5px;">
+							                        <label for="{$k}" class="checkbox-skin">
+				                                        <input id="{$k}" type="checkbox" class="{if $vo['class']}{$vo['class']}{/if}" data-checked="{$k}"/>
+				                                        <i class="checkbox-icon fa"></i>
+				                                        <span>{$item['title']}</span>
+				                                    </label>
+							                    </div>
+							                    <div class="card-body" style="padding-left: 45px;">
+							                        <div class="col-lg-12" style="line-height:35px;">
+							                        	{foreach $item['list'] as $vs}
+								                            <label for="{$k}_{$vs['a']}" class="checkbox-skin">
+						                                        <input id="{$k}_{$vs['a']}" type="checkbox" name="{$vo['name']}" class="{if $vo['class']}{$vo['class']}{/if}" data-item="{$k}" value="{:strtolower(isset($vs['m']) ? $vs['m'] : $k)}_{:strtolower($vs['a'])}" {if isset($vs['is_checked']) && $vs['is_checked']}checked{/if}/>
+						                                        <i class="checkbox-icon fa"></i>
+						                                        <span>{$vs['title']}</span>
+						                                    </label>
+					                                    {/foreach}
+							                        </div>
+							                    </div>
+							                </div>
+						                {/foreach}
+					                {/foreach}
+								{/case}
+								{case static}
+									<div class="row-item">
+			                            <div class="col-lg-12">
+			                                <label class="form-label">{if !empty($vo['require']) && $vo['require']}<span class="red">*</span>{/if}{$vo['title']}：</label>
+			                                <div class="form-input"  style="white-space: initial;">
+			                                    <label class="checkbox-skin">
+			                                    	{if !empty($vo['options'])}
+			                                    		{if !empty($vo['value']) && $vo['value']}
+			                                    			{$vo['options'][$vo['value']]}
+			                                    		{else}
+			                                    			-
+			                                    		{/if}
+			                                    	{else}
+			                                        	{if !empty($vo['value']) && $vo['value']}{$vo['value']}{else}-{/if}
+			                                    	{/if}
+			                                    </label>
+			                                </div>
+			                            </div>
+			                        </div>
+								{/case}
+								{case static_img}
+									<div class="row-item">
+			                            <div class="col-lg-12">
+			                                <label class="form-label">{if !empty($vo['require']) && $vo['require']}<span class="red">*</span>{/if}{$vo['title']}：</label>
+			                                <div class="form-input" style="white-space: initial;">
+			                                    {if !empty($vo['images'])}
+			                                    	{if empty($vo['images'])}<label class="checkbox-skin">-</label>{/if}
+													<ul class="upload-thumb icon-list">
+														{foreach $vo['images'] as $pos => $img}
+															<li>
+																<a href="{$img}" class="lightbox" title="{$vo['title']}" style="display: block;background-color:transparent">
+																	<img src="{$img}">
+																</a>
+															</li>
+														{/foreach}
+													</ul>
+												{else}
+				                                	-
+			                                    {/if}
+			                                </div>
+			                            </div>
+			                        </div>
+								{/case}
+								{case static_input}
+									<div class="row-item">
+			                            <div class="col-lg-12">
+			                                <label class="form-label">{if isset($vo['require']) && $vo['require']}<span class="red">*</span>{/if}{$vo['title']}：</label>
+			                                <div class="form-input" style="white-space: initial;">
+			                                	<div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+				                                	{if (isset($vo['value']) && empty($vo['value'])) || !isset($vo['value'])}
+				                                		<input type="text" class="input-skin {$vo['class']|default=''} {if isset($vo['require']) && $vo['require']} require{/if}" name="{$vo['name']}" value="{$vo['value']|default=''}" {if isset($vo['max-length'])}maxlength="{$vo['max-length']}"{/if} {$vo['extra']|default=''}/>
+				                                	{else}
+														<label class="checkbox-skin">
+															{if isset($vo['value']) && $vo['value']}{$vo['value']}{else}-{/if}
+														</label>	
+				                                	{/if}
+			                                	</div>
+			                                	{if isset($vo['tips'])}
+				                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 form-tips">
+				                                    	{$vo['tips']}
+				                                    </div>
+												{/if}
+			                                </div>
+			                            </div>
+			                        </div>
+								{/case}
+								{case textarea}
+									<div class="row-item">
+			                            <div class="col-lg-12">
+			                                <label class="form-label">{if !empty($vo['require']) && $vo['require']}<span class="red">*</span>{/if}{$vo['title']}：</label>
+			                                <div class="form-input">
+			                                	<div class="col-lg-7 col-md-7 col-sm-7 col-xs-7" style="position: relative;">
+													<textarea class="textarea-skin {if isset($vo['require']) && $vo['require']} require{/if}" name="{$vo['name']}" {if isset($vo['account']) && $vo['account']}onkeyup="limit_words(this)" onchange='limit_words(this)' onkeydown='limit_words(this)' {/if} {if isset($vo['extra'])}{$vo['extra']}{/if}>{$vo['value']|default=''}</textarea>
+													{if !empty($vo['account']) && $vo['account']}
+														<span class="limit-tips">
+															<font class="cur-word">{$content_len|default='0'}</font>/<font class="total-word">{$vo['word-limit']}</font>
+														</span>
+													{/if}
+												</div>
+												{if !empty($vo['tips'])}
+				                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 form-tips">
+				                                    	{$vo['tips']}
+				                                    </div>
+												{/if}
+			                                </div>
+			                            </div>
+			                        </div>
+								{/case}
+								{case switch}
+									<div class="row-item">
+			                            <div class="col-lg-12">
+			                                <label class="form-label">{if !empty($vo['require']) && $vo['require']}<span class="red">*</span>{/if}{$vo['title']}：</label>
+			                                <div class="form-input">
+			                                	<div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+				                                    <label for="swc-{$vo['name']}" class="switch-skin">
+				                                        <input id="swc-{$vo['name']}" type="checkbox" name="{$vo['name']}" {if (!empty($vo['value']) && $vo['value']==1) || !isset($vo['value'])}checked{/if}>
+				                                        <i class="switch-icon fa"></i>
+				                                        <em></em>
+				                                    </label>
+				                                </div>
+			                                </div>
+			                            </div>
+			                        </div>
+								{/case}
+								{case date}
+									<div class="row-item">
+			                            <div class="col-lg-12">
+			                                <label class="form-label">{if !empty($vo['require']) && $vo['require']}<span class="red">*</span>{/if}{$vo['title']}：</label>
+			                                <div class="form-input">
+			                                	<div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+				                                    <input type="text" class="dateSelect input-skin {if !empty($vo['require']) && $vo['require']} require{/if}" placeholder="{$vo['title']}" value="{if isset($vo['value'])}{$vo['value']}{/if}" name="{$vo['name']}" />
+				                                </div>
+				                                {if !empty($vo['tips'])}
+				                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 form-tips">
+				                                    	{$vo['tips']}
+				                                    </div>
+												{/if}
+			                                </div>
+			                            </div>
+			                        </div>
+								{/case}
+								{case date_range}
+									<div class="row-item">
+			                            <div class="col-lg-12">
+			                                <label class="form-label">{if !empty($vo['require']) && $vo['require']}<span class="red">*</span>{/if}{$vo['title']}：</label>
+			                                <div class="form-input">
+			                                	<div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+				                                    <input type="text" class="dateRange input-skin {if !empty($vo['require']) && $vo['require']} require{/if}" placeholder="{$vo['title']}" value="{if isset($vo['value'])}{$vo['value']}{/if}" name="{$vo['name']}" />
+				                                </div>
+				                                {if !empty($vo['tips'])}
+				                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 form-tips">
+				                                    	{$vo['tips']}
+				                                    </div>
+												{/if}
+			                                </div>
+			                            </div>
+			                        </div>
+								{/case}
+								{case password}
+									<div class="row-item">
+			                            <div class="col-lg-12">
+			                                <label class="form-label">{if !empty($vo['require']) && $vo['require']}<span class="red">*</span>{/if}{$vo['title']}：</label>
+			                                <div class="form-input">
+			                                	<div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+			                                		<input type="password" class="input-skin {if !empty($vo['require']) && $vo['require']} require{/if}" name="{$vo['name']}" value="{$vo['value']|default=''}" {if isset($vo['max-length'])}maxlength="{$vo['max-length']}"{/if} />
+			                                	</div>
+			                                	{if !empty($vo['tips'])}
+				                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 form-tips">
+				                                    	{$vo['tips']}
+				                                    </div>
+												{/if}
+			                                </div>
+			                            </div>
+			                        </div>
+								{/case}
+								{case picture}
+									<div class="row-item">
+			                            <div class="col-lg-12">
+			                                <label class="form-label">{if !empty($vo['require']) && $vo['require']}<span class="red">*</span>{/if}{$vo['title']}：</label>
+			                                <div class="form-input" style="white-space: initial;">
+			                                	<div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+				                                    <input type="button" class="btn btn-white card-upload" value="{if $vo['multiple']}选择文件{else}上传文件{/if}" data-name="{$vo['name']}" data-accept="{$vo['accept']|default=''}" data-multiple="{$vo['multiple']|default=''}" data-ext = "{$vo['ext']|default=''}">
+
+				                                    <input type="hidden" class="{if isset($vo['require']) && $vo['require']} require{/if}" name="{$vo['name']}" id="{$vo['name']}" value="{if isset($vo['value'])}{$vo['value']}{/if}">
+
+													{if !empty($vo['value'])}
+														<ul class="upload-thumb icon-list">
+															{foreach $vo['images'] as $pos => $img}
+																<li>
+																	<a href="{$img}" class="lightbox" title="{$vo['title']}" style="display: block;background-color:transparent">
+																		<img src="{$img}">
+																	</a>
+																	<a href="javascript:;" class="upload-delete" data-id="{$pos}"><i class="iconfont">&#xe617;</i></a>
+																</li>
+															{/foreach}
+														</ul>
+													{/if}
+				                                </div>
+				                                {if !empty($vo['tips'])}
+				                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 form-tips">
+				                                    	{$vo['tips']}
+				                                    </div>
+												{/if}
+			                                </div>
+			                            </div>
+			                        </div>
+								{/case}
+							{/switch}
+						{/foreach}
+						{$extra_html|raw}
+						{if $is_submit}
+							<div class="row-item">
+	                            <div class="col-lg-12">
+	                                <div class="form-input" style="margin-left: 210px;padding-top: 15px;">
+	                                    <a class="btn btn-white form-cancel" style="height:auto;" href="{$href_referer}">取消</a>
+	                                    <button type="submit" class="btn btn-primary" onclick="formSubmit($(this).parents('form'));">提 交</button>
+	                                </div>
+	                            </div>
+	                        </div>
+                        {/if}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{/if}
+<script type="text/javascript">
+	$(".form-cancel").click(function(event) {
+		var html = parent.$("#win-box").html();
+		if (html) {
+			parent.layer.closeAll();
+			return false;
+		}
+	});
+</script>

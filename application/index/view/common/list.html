@@ -1,0 +1,154 @@
+{extend name="common/header"/}
+{block name="main"}
+	<div class="fluid full-screen">
+	    <div class="row-item col-space10">
+	        <div class="col-lg-12">
+	            <div class="col-card card-full">
+	            	{if !empty($tab_nav)}
+		            	<div class="card-tab">
+	                        <div class="row-item">
+	                            <div class="tab tab02">
+	                                <div class="tab-header">
+	                                    <ul>
+	                                    	{if !empty($tab_nav)}
+	                                    		{foreach $tab_nav['tab_list'] as $tab => $nav}
+		                                			<li  {if $tab == $tab_nav['cur_tab']}class="on"{/if}>
+			                                        	<a href="{$nav['href']}">{$nav['title']}</a>
+			                                        </li>
+	                                    		{/foreach}
+	                                		{/if}
+	                                    </ul>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+                    {/if}
+                    {if !empty($meta_title)}
+		            	<div class="card-header">
+		                    <i class="dot"></i>{$meta_title}
+							<small class="top-msg">{$msg_notice|default=''}</small>
+							<div>
+								{if !empty($top_button_list)}
+									{foreach $top_button_list as $tpb}
+										<a title="{$tpb['title']}" href="{$tpb['href']}" class="btn btn-primary btn-sm btn-all-add {$tpb['class']|default=''}" style="line-height:30px;">{$tpb['title']}</a>
+									{/foreach}
+								{/if}
+							</div>
+		                </div>
+	                {/if}
+	                <div class="card-body col-space20">
+						{include file="common/search" /}
+	                    <div class="list">
+	                        <table class="table table-hover">
+	                            <thead>
+		                            <tr>
+		                            	{foreach $table_column_list as $column}
+
+		                            		{switch $column['type']}
+		                            			{case checkbox}
+					                                <th style="width: 24px">
+					                                    <label for="ck_all" class="checkbox-skin">
+					                                        <input id="ck_all" class="ck_all" type="checkbox" name="checkbox" data-checked="checkbox">
+					                                        <i class="checkbox-icon fa"></i>
+					                                    </label>
+					                                </th>
+				                                {/case}
+				                                {case order}
+				                                	<th>
+														{:get_order($column['title'], $column['field'], $getdata['sort_type'], $getdata['field'])}
+				                                	</th>
+				                                {/case}
+
+				                                {default /}
+				                                	<th>{$column['title']}</th>
+
+			                                {/switch}
+			                                
+										{/foreach}
+										{if !empty($right_button_list)}
+											<th>操作</th>
+										{/if}
+		                            </tr>
+	                            </thead>
+	                            <tbody id="dataList">
+	                            	{foreach $table_data_list as $dl => $dlist}
+		                            	<tr>
+	                            			{foreach $table_column_list as $m => $n}
+	                            				{switch $n['type']}
+		                            				{case checkbox}
+		                            					<td>
+					                            			<label for="ck{$key}" class="checkbox-skin">
+					                     						<input id="ck{$key}" type="checkbox" name="checkbox" data-item="checkbox" data-id="{$dlist['id']}">                     
+					                     						<i class="checkbox-icon fa"></i>
+				                        					</label>
+				                        				</td>
+		                            				{/case}
+		                            				{case switch}
+		                            					<td>
+							                                <div class="form-input" style="margin-left: 0;">
+							                                    <label for="swc{$dl}" class="switch-skin">
+							                                        <input id="swc{$dl}" type="checkbox" name="{$n['name']}" {if $dlist[$n['name']] == 1}checked{/if} data-id="{$dlist['id']}" data-mod="{$vo['mod']|default=$MODULE}">
+							                                        <i class="switch-icon fa"></i>
+							                                        <em></em>
+							                                    </label>
+							                                </div>
+														</td>
+		                            				{/case}
+                                                    {case picture}
+                                                    <td>
+                                                        {if !empty($dlist[$n['name']])}
+                                                            {if is_array($dlist[$n['name']])}
+                                                                {if count($dlist[$n['name']]) > 1}
+
+                                                                    {foreach $dlist[$n['name']] as $dl => $dlimg}
+                                                                        <a href="{$dlimg}" class="lightbox">
+                                                                            {if isFirstArrayValue($dl, $dlist[$n['name']])}
+                                                                                <font color="red">[图]</font>
+                                                                            {/if}
+                                                                            <img src="{$dlimg}" alt="" width="50" style="display: none;">
+                                                                        </a>
+                                                                    {/foreach}
+                                                                {else}
+                                                                    <a href="{$dlist[$n['name']][0]}" class="lightbox">
+                                                                        <img src="{$dlist[$n['name']][0]}" alt="" width="50">
+                                                                    </a>
+                                                                {/if}
+                                                            {else}
+                                                                <a href="{$dlist[$n['name']]}" class="lightbox">
+                                                                    <img src="{$dlist[$n['name']]}" alt="" width="50">
+                                                                </a>
+                                                            {/if}
+                                                        {/if}
+                                                    </td>
+                                                    {/case}
+		                            				{default /}
+			                        					<td>{$dlist[$n['name']]|default='-'|raw}</td>
+			                                	{/switch}
+	                        				{/foreach}
+                        					{if !empty($right_button_list)}
+												<td>
+													{foreach $dlist['right_button'] as  $rb}
+														<a href="{$rb['href']}" title="{$rb['title']}" class="btn btn-primary btn-sm {if !empty($rb['class'])}{$rb['class']}{/if}">{$rb['title']}</a>
+													{/foreach}
+												</td>
+											{/if}
+	                        			</tr>
+									{/foreach}
+                        		</tbody>
+	                        </table>
+	                        <div id="empty" class="empty" {if empty($table_data_list)} style="display: block;" {/if}>
+	                            <img src="{$Think.config.template.static_img}/empty.svg">
+	                            <p>{$Think.config.logic.NOFOUND_RECORDS}~</p>
+	                        </div>
+	                    </div>
+	                    <div class="list-footer">
+	                        <div class="fr">
+	                            {include file="common/pager" /}
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+{/block}
