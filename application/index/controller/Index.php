@@ -26,6 +26,6 @@ class Index extends Common
     }
     public function ceshi()
     {
-        echo Carbon::tomorrow();
+        echo Carbon::now()->addDay(1);
     }
 }
