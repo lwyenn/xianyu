@@ -24,4 +24,8 @@ class Index extends Common
     {
         echo Carbon::yesterday()->addDay(1);
     }
+    public function ceshi()
+    {
+        echo Carbon::tomorrow();
+    }
 }
