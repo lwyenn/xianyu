@@ -15,9 +15,9 @@
 
 return [
     // 应用名称
-    'app_name'               => '客户管理',
+    'app_name'               => 'doc测试',
     // 应用地址
-    'app_host'               => '',
+    'app_host'               => 'xyu.io',
     // 应用调试模式
     'app_debug'              => true,
     // 应用Trace
